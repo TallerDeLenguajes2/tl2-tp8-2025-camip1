@@ -3,7 +3,7 @@ using tl2_tp8_2025_camip1.Models;
 
 public class ProductoRepository
 {
-    private string cadenaConexion = "Data Source = DB/Tienda.db";
+    private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
 
     //metodos
 
@@ -12,10 +12,12 @@ public class ProductoRepository
     {
         List<Producto> ListaProductos = [];
 
-        string query = "SELECT * FROM producto";
+        string query = @"SELECT * FROM producto";
 
         using var connection = new SqliteConnection(cadenaConexion);
+
         connection.Open();
+ 
         var command = new SqliteCommand(query, connection);
         using (SqliteDataReader reader = command.ExecuteReader())
         {
@@ -25,46 +27,37 @@ public class ProductoRepository
                 {
                     IdProducto = Convert.ToInt32(reader["id_producto"]),
                     Descripcion = reader["descripcion"].ToString(),
-                    Precio = Convert.ToDouble(reader["precio"])
+                    Precio = Convert.ToInt32(reader["precio"])
                 };
                 ListaProductos.Add(producto);
             }
         }
-        //connection.Close();
+        connection.Close();
 
         return ListaProductos;
     }
 
-    // Crear un nuevo Producto. (recibe un objeto Producto)
-    public bool Create(Producto prod)
+    public void Create(Producto prod)
     {
-        string queryString = "INSERT INTO Producto (descripcion, precio) VALUES (@descripcion, @precio)";
+        string queryString = @"INSERT INTO Producto (descripcion, precio) VALUES (@descripcion, @precio)";
 
-        try
-        {
-            using var conexion = new SqliteConnection(cadenaConexion);
-            conexion.Open();
+        using var conexion = new SqliteConnection(cadenaConexion);
+        conexion.Open();
 
-            using var comando = new SqliteCommand(queryString, conexion);
-            comando.Parameters.Add(new SqliteParameter("@descripcion", prod.Descripcion));
-            comando.Parameters.Add(new SqliteParameter("@precio", prod.Precio));
+        using var comando = new SqliteCommand(queryString, conexion);
+        
+        comando.Parameters.Add(new SqliteParameter("@descripcion", prod.Descripcion));
+        comando.Parameters.Add(new SqliteParameter("@precio", prod.Precio));
 
-            comando.ExecuteNonQuery();
+        comando.ExecuteNonQuery();
 
-            conexion.Close();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al insertar producto: {ex.Message}");
-            return false;
-        }
+        conexion.Close();
     }
 
     //Modificar un Producto existente. (recibe un Id y un objeto Producto)
     public bool Update(int id, Producto prodModificado)
     {
-        string queryString = "UPDATE Producto SET descripcion = @descripcion, precio = @precio WHERE id_producto = @id_producto";
+        string queryString = @"UPDATE Producto SET descripcion = @descripcion, precio = @precio WHERE id_producto = @id_producto";
 
         using var conexion = new SqliteConnection(cadenaConexion);
         conexion.Open();
@@ -84,7 +77,7 @@ public class ProductoRepository
 
     public Producto GetById(int id)
     {
-        string query = "SELECT id_producto, descripcion, precio FROM Producto WHERE id_producto = @id_producto";
+        string query = @"SELECT * FROM Producto WHERE id_producto = @id_producto";
 
         using var conexion = new SqliteConnection(cadenaConexion);
         conexion.Open();
@@ -102,25 +95,38 @@ public class ProductoRepository
             {
                 IdProducto = Convert.ToInt32(lector["id_producto"]),
                 Descripcion = lector["descripcion"].ToString(),
-                Precio = Convert.ToDouble(lector["precio"])
+                Precio = Convert.ToInt32(lector["precio"])
             };
         }
-
+        conexion.Close();
         return producto; // devuelve null si no lo encontró
     }
-    
+
     public bool Delete(int id)
     {
-        string query = "DELETE FROM Producto WHERE id_producto = @id_producto";
+        string query = @"DELETE FROM Producto WHERE id_producto = @id_producto";
 
         using var conexion = new SqliteConnection(cadenaConexion);
         conexion.Open();
-        
+
         using var comando = new SqliteCommand(query, conexion);
         comando.Parameters.Add(new SqliteParameter("@id_producto", id));
 
         int filasAfectadas = comando.ExecuteNonQuery();
 
+        conexion.Close();
         return filasAfectadas > 0;
     }
+
+    //determina si existe un producto
+
+    public bool ExisteProducto(Producto prod)
+    {
+        if (prod == null || prod.IdProducto <= 0)
+        return false;
+
+        var productoEncontrado = GetById(prod.IdProducto);
+        return productoEncontrado != null;
+    }
+
 }
