@@ -1,14 +1,17 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using tl2_tp8_2025_camip1.Models;
+using tl2_tp8_2025_camip1.Repository;
 
 namespace tl2_tp8_2025_camip1.Controllers;
 
 public class ProductoController : Controller
 {
+    //private readonly ILogger<HomeController> _logger;
     private ProductoRepository _productoRepository;
     public ProductoController()
     {
+        //  _logger = logger;
         _productoRepository = new ProductoRepository();
     }
     //A partir de aquí van todos los Action Methods (Get, Post,etc.)
@@ -24,60 +27,51 @@ public class ProductoController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        var producto = new Producto();
+        return View(); //me lleva a la vista crear producto con el formulario
+    }
+
+    [HttpPost]
+    public IActionResult Create(Producto nuevoProducto)
+    {
+        _productoRepository.Create(nuevoProducto);
+        return RedirectToAction("Index");  //redirige a la vista index de producto      
+    }
+
+    [HttpGet]
+    public IActionResult Edit(int id)
+    {
+        var producto = _productoRepository.GetById(id);
         return View(producto);
     }
+
+    [HttpPost]
+    public IActionResult Edit(Producto producto)
+    {
+        _productoRepository.Update(producto.IdProducto, producto);
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult Delete(int id)
+    {
+        var producto = _productoRepository.GetById(id);
+        return View(producto);
+    }
+    
+    [HttpPost]
+    public IActionResult DeleteConfirmed(int id)
+    {
+        if (_productoRepository.GetById(id) == null) return NotFound();
+        _productoRepository.Delete(id);
+        return RedirectToAction("Index");
+    }
+
     // [HttpGet]
-    // public IActionResult GetAll()
+    // public IActionResult Details(int id)
     // {
-    //     var productos = _productoRepository.GetAll();
-    //     return Ok(productos);
-    // }
+    //     var producto = _productoRepository.GetById(id);
+    //     if (producto == null) return NotFound();
 
-    // [HttpPost]
-    // public IActionResult Create(Producto producto)
-    // {
-    //     bool realizado = _productoRepository.Create(producto);
-    //     if (realizado)
-    //     {
-    //         return Created($"producto/{producto.IdProducto}", producto);
-    //     }
-    //     return BadRequest();
-    // }
-
-    // [HttpPut("{id}")]
-    // public IActionResult Update(int id, Producto producto)
-    // {
-    //     bool realizado = _productoRepository.Update(id, producto);
-    //     if (realizado)
-    //     {
-    //         return Ok(producto);
-    //     }
-    //     return NotFound("No se encontro un producto con ese id");
-    // }
-
-    // [HttpGet("{id}")]
-    // public IActionResult GetById(int id)
-    // {
-    //     var productoEncontrado = _productoRepository.GetById(id);
-    //     if (productoEncontrado != null)
-    //     {
-    //         return Ok(productoEncontrado);
-    //     }
-    //     return NotFound("No se encontro un producto con el id ingresado");
-    // }
-
-    // [HttpDelete]
-    // public IActionResult Delete(int id)
-    // {
-    //     bool realizado = _productoRepository.Delete(id);
-    //     if (realizado)
-    //     {
-    //         return NoContent();
-    //     }
-    //     else
-    //     {
-    //         return NotFound($"No se encontró el producto con ID {id} para eliminar.");
-    //     }
+    //     return View(producto);
     // }
 }

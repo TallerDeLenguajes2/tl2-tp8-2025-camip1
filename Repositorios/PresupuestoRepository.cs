@@ -2,6 +2,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic;
 using tl2_tp8_2025_camip1.Models;
 
+namespace tl2_tp8_2025_camip1.Repository;
 public class PresupuestoRepository
 {
     private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
@@ -25,7 +26,7 @@ public class PresupuestoRepository
                 {
                     IdPresupuesto = Convert.ToInt32(reader["id_presupuesto"]),
                     NombreDestinatario = reader["nombre_destinatario"].ToString(),
-                    FechaCreacion = Convert.ToDateTime(reader["fecha_creacion"]),
+                    FechaCreacion = DateOnly.Parse(Convert.ToString(reader["fecha_creacion"])),
                     ListaDetalles = new List<PresupuestoDetalle>()
                 };
 
@@ -55,7 +56,7 @@ public class PresupuestoRepository
         command.Parameters.Add(new SqliteParameter("@id_presupuesto", id));
 
         using var reader = command.ExecuteReader();
-        
+
         while (reader.Read())
         {
             var producto = new Producto
@@ -76,7 +77,7 @@ public class PresupuestoRepository
 
         return ListaDetalles;
     }
-    
+
 
     public bool Create(Presupuesto presupuesto)
     {
@@ -129,21 +130,22 @@ public class PresupuestoRepository
 
         using var lector = comando.ExecuteReader();
 
-        Presupuesto presupuesto = null;
-
+        Presupuesto presupuesto;
+        
         if (lector.Read())
         {
             presupuesto = new Presupuesto
             {
                 IdPresupuesto = Convert.ToInt32(lector["id_presupuesto"]),
                 NombreDestinatario = lector["nombre_destinatario"].ToString(),
-                FechaCreacion = Convert.ToDateTime(lector["fecha_creacion"]),
+                FechaCreacion = DateOnly.Parse(Convert.ToString(lector["fecha_creacion"])),
                 ListaDetalles = new List<PresupuestoDetalle>()
             };
         }
-        else {
+        else
+        {
             conexion.Close();
-            return presupuesto;
+            return null;
         }
 
         presupuesto.ListaDetalles = GetAllDetalles(id, conexion);
@@ -160,7 +162,7 @@ public class PresupuestoRepository
         {
             return false;
         }
-        
+
         using var conexion = new SqliteConnection(cadenaConexion);
         conexion.Open();
 
@@ -178,12 +180,11 @@ public class PresupuestoRepository
         conexion.Close();
         return filasAfectadas > 0;
     }
-    
 
     public bool Delete(int id)
     {
-    //si no tengo metodo de borrado cascada debo eliminar primero los detalles que referencian 
-    //al presupuesto a eliminar 
+        //si no tengo metodo de borrado cascada debo eliminar primero los detalles que referencian 
+        //al presupuesto a eliminar 
         string query = "DELETE FROM Presupuesto WHERE id_presupuesto = @id_presupuesto";
 
         using var conexion = new SqliteConnection(cadenaConexion);

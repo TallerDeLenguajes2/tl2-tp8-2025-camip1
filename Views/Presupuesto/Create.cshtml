@@ -1,7 +1,7 @@
 @model Producto
 
 @{
-    ViewData["Title"] = "Crear Producto";
+    ViewData["Title"] = "Crear Presupuesto";
 }
 <h1>@ViewData["Title"]</h1>
 
@@ -21,12 +21,5 @@
                 <a class="btn btn-danger " asp-controller="Producto" asp-action="Index">Volver</a>
             </section>
         </form>
-        @*// asp-for conecta los modelos con el formulario, es decir que automaticamente se crea el objeto*@
     </article>
 </section>
-
-@*el @model: 
-*Recibe datos: Cuando el controlador renderiza una vista, el modelo contiene los datos que se mostrarán.
-*Envía datos: Cuando el formulario se envía al servidor, el modelo puede usarse para mapear los datos enviados.
-en este caso se los enviamos al formulario (te das cuenta si en el controlador retorna la vista sola o con algo,
-si va vacia el model en la vista envia los datos, si retorna algo, el model recibe los datos en la vista)*@

@@ -1,6 +1,8 @@
 using Microsoft.Data.Sqlite;
 using tl2_tp8_2025_camip1.Models;
 
+
+namespace tl2_tp8_2025_camip1.Repository;
 public class ProductoRepository
 {
     private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
@@ -17,7 +19,7 @@ public class ProductoRepository
         using var connection = new SqliteConnection(cadenaConexion);
 
         connection.Open();
- 
+
         var command = new SqliteCommand(query, connection);
         using (SqliteDataReader reader = command.ExecuteReader())
         {
@@ -45,7 +47,7 @@ public class ProductoRepository
         conexion.Open();
 
         using var comando = new SqliteCommand(queryString, conexion);
-        
+
         comando.Parameters.Add(new SqliteParameter("@descripcion", prod.Descripcion));
         comando.Parameters.Add(new SqliteParameter("@precio", prod.Precio));
 
@@ -55,7 +57,7 @@ public class ProductoRepository
     }
 
     //Modificar un Producto existente. (recibe un Id y un objeto Producto)
-    public bool Update(int id, Producto prodModificado)
+    public void Update(int id, Producto prodModificado)
     {
         string queryString = @"UPDATE Producto SET descripcion = @descripcion, precio = @precio WHERE id_producto = @id_producto";
 
@@ -67,11 +69,9 @@ public class ProductoRepository
         comando.Parameters.Add(new SqliteParameter("@precio", prodModificado.Precio));
         comando.Parameters.Add(new SqliteParameter("@id_producto", id));
 
-        int filasAfectadas = comando.ExecuteNonQuery();
+        comando.ExecuteNonQuery();
 
         conexion.Close();
-
-        return filasAfectadas > 0;
     }
 
 
@@ -102,7 +102,7 @@ public class ProductoRepository
         return producto; // devuelve null si no lo encontró
     }
 
-    public bool Delete(int id)
+    public void Delete(int id)
     {
         string query = @"DELETE FROM Producto WHERE id_producto = @id_producto";
 
@@ -112,10 +112,11 @@ public class ProductoRepository
         using var comando = new SqliteCommand(query, conexion);
         comando.Parameters.Add(new SqliteParameter("@id_producto", id));
 
-        int filasAfectadas = comando.ExecuteNonQuery();
+        //int filasAfectadas = comando.ExecuteNonQuery();
+        comando.ExecuteNonQuery();
 
         conexion.Close();
-        return filasAfectadas > 0;
+        //return filasAfectadas > 0;
     }
 
     //determina si existe un producto
@@ -123,7 +124,7 @@ public class ProductoRepository
     public bool ExisteProducto(Producto prod)
     {
         if (prod == null || prod.IdProducto <= 0)
-        return false;
+            return false;
 
         var productoEncontrado = GetById(prod.IdProducto);
         return productoEncontrado != null;

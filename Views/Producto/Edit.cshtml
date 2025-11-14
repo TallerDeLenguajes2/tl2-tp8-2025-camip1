@@ -1,0 +1,29 @@
+@model Producto
+
+@{
+    ViewData["Title"] = "Modificar Producto";
+}
+<h1 class="text-center my-4">@ViewData["Title"]</h1>
+
+
+<section class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <article class="border rounded p-5 shadow-sm bg-light" style="width: 400px;">
+        <form asp-controller="Producto" asp-action="Edit" method="post">
+            <input type="hidden" asp-for="IdProducto" />
+            <section class="form-group mb-3">
+                <label asp-for="Descripcion" class="form-label fw-semibold">Descripción</label>
+                <input asp-for="Descripcion" class="form-control">
+            </section>
+
+            <section class="form-group mb-4">
+                <label asp-for="Precio" class="form-label fw-semibold">Precio</label>
+                <input asp-for="Precio" class="form-control">
+            </section>
+
+            <section class="d-flex justify-content-between">
+                <input type="submit" value="Guardar cambios" class="btn btn-primary">
+                <a type="button" asp-controller="Producto" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </section>
+        </form>
+    </article>
+</section>

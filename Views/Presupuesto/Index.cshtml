@@ -1,0 +1,41 @@
+@model IEnumerable<tl2_tp8_2025_camip1.Models.Presupuesto>
+
+@{
+    ViewData["Title"] = "Presupuestos Section";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class = "btn btn-primary">Crear nuevo presupuesto</a>
+</p>
+
+<table class="table">
+    <thead>
+        <th hidden>Id Presupuesto</th>
+        <th>Presupuesto</th>
+        <th>Destinatario</th>
+        <th>Fecha de creacion</th>
+        <th>Modificar</th>
+        <th>Eliminar</th>
+        <th>Detalle</th>
+    </thead>
+    <tbody>
+        @foreach(Presupuesto item in Model)
+        {
+            <tr>
+                <td>@item.IdPresupuesto</td>
+                <td>@item.NombreDestinatario</td>
+                <td>@item.FechaCreacion</td>
+                <td>
+                    <a asp-controller="Presupuesto" asp-action="Edit" asp-route-id="@item.IdPresupuesto" class="btn btn-warning">Modificar</a>
+                </td>
+                <td>
+                    <a asp-controller="Presupuesto" asp-action="Delete" asp-route-id="@item.IdPresupuesto" class="btn btn-danger">Eliminar</a>
+                </td>
+                <td>
+                    <a asp-controller="Presupuesto" asp-action="Details" asp-route-id="@item.IdPresupuesto" class="link-opacity-100">Ver detalles</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

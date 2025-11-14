@@ -4,7 +4,7 @@ namespace tl2_tp8_2025_camip1.Models
     {
         public int IdPresupuesto { get; set; }
         public string NombreDestinatario { get; set; }
-        public DateTime FechaCreacion { get; set; }
+        public DateOnly FechaCreacion { get; set; }
         public List<PresupuestoDetalle> ListaDetalles { get; set; }
 
         //METODOS
