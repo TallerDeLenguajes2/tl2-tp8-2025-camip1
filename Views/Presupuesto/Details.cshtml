@@ -11,17 +11,20 @@
         <div class="card-body">
             <h5 class="card-title">Presupuesto @Model.IdPresupuesto</h5>
             <p class="card-text">@Model.NombreDestinatario</p>
-            <p class="card-text">@Model.FechaCreacion</p>
+            <p class="card-text">@Model.FechaCreacion.Day/@Model.FechaCreacion.Month/@Model.FechaCreacion.Year</p>
             <h6><strong>Lista Productos</strong></h6>
             @foreach(PresupuestoDetalle detalle in Model.ListaDetalles)
             {
                 <p class="card-text">@detalle.Producto.Descripcion - @detalle.Producto.Precio - Cantidad: @detalle.Cantidad</p>
             }
         </div>
-        
+        <div class = "d-flex justify-content-center">
+            <a asp-controller="Presupuesto" asp-action="CreateDetalle" asp-route-id="@Model.IdPresupuesto" class="btn btn-info m-2">Agregar Producto</a>
+            <a asp-controller="Presupuesto" asp-action="Edit" asp-route-id="@Model.IdPresupuesto" class="btn btn-warning m-2">Modificar</a>
+            <a asp-controller="Presupuesto" asp-action="Delete" asp-route-id="@Model.IdPresupuesto" class="btn btn-danger m-2">Eliminar</a>            
+        </div>
         <div class="mt-4 d-flex justify-content-between">
             <a asp-action="Index" class="btn btn-secondary">Volver</a>
         </div>
-
     </article>
 </section>

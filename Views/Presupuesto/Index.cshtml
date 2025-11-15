@@ -15,9 +15,6 @@
         <th>Presupuesto</th>
         <th>Destinatario</th>
         <th>Fecha de creacion</th>
-        <th>Modificar</th>
-        <th>Eliminar</th>
-        <th>Agregar Producto</>
         <th>Detalle</th>
     </thead>
     <tbody>
@@ -26,16 +23,7 @@
             <tr>
                 <td>@item.IdPresupuesto</td>
                 <td>@item.NombreDestinatario</td>
-                <td>@item.FechaCreacion</td>
-                <td>
-                    <a asp-controller="Presupuesto" asp-action="Edit" asp-route-id="@item.IdPresupuesto" class="btn btn-warning">Modificar</a>
-                </td>
-                <td>
-                    <a asp-controller="Presupuesto" asp-action="Delete" asp-route-id="@item.IdPresupuesto" class="btn btn-danger">Eliminar</a>
-                </td>
-                <td>
-                    <a asp-controller="Presupuesto" asp-action="CreateDetalle" asp-route-id="@item.IdPresupuesto" class="btn btn-info">Agregar Producto</a>
-                </td>
+                <td>@item.FechaCreacion.Day/@item.FechaCreacion.Month/@item.FechaCreacion.Year</td>
                 <td>
                     <a asp-controller="Presupuesto" asp-action="Details" asp-route-id="@item.IdPresupuesto" class="link-opacity-100">Ver detalles</a>
                 </td>

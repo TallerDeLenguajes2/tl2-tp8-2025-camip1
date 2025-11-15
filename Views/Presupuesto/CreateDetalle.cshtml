@@ -1,4 +1,4 @@
-@model PresupuestoDetalle
+@model int
 
 @{
     ViewData["Title"] = "Agregar Detalle";
@@ -10,17 +10,17 @@
     <article class="border rounded p-5 shadow-sm bg-light text-center" style="width: 400px;">
         <p>¿Desea agregar un detalle?</p>
         <form asp-controller="Presupuesto" asp-action="CreateDetalle" method="post">
-            <section class="form-group p-2">
-                <label asp-for="Producto" class="form-label">Id Producto</label>
-                <input type="number" asp-for="Producto" class="form-control-sm">
+            <input type="hidden" asp-for="@Model" />
+            <input type="hidden" name="idPresupuesto" value="@Model" />
+
+            <section class="form-group">
+                <label>Id Producto</label>
+                <input type="number" name="idProducto" class="form-control-sm" />
             </section>
-            <section class="form-group d-flex justify-content-between p-2">
-                <label asp-for="Cantidad" class="form-label">Cantidad</label>
-                <input type="number" asp-for="Cantidad" class="form-control-sm">
-            </section>
-            <section class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-danger px-4">Guardar</button>
-                <a asp-controller="Presupuesto" asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+
+            <section class="form-group">
+                <label>Cantidad</label>
+                <input type="number" name="cantidad" class="form-control-sm" />
             </section>
         </form>
     </article>

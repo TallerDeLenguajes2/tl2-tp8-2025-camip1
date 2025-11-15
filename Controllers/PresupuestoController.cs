@@ -61,17 +61,17 @@ public class PresupuestoController : Controller
     }
     
     [HttpPost]
-    public IActionResult DeleteConfirmed(int id)
+    public IActionResult DeleteConfirmed(int idPresupuesto)
     {
-        if (_repoPresupuesto.GetById(id) == null) return NotFound();
-        _repoPresupuesto.Delete(id);
+        if (_repoPresupuesto.GetById(idPresupuesto) == null) return NotFound();
+        _repoPresupuesto.Delete(idPresupuesto);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
-    public IActionResult CreateDetalle(int idPresupuesto)
+    public IActionResult CreateDetalle(int id)
     {
-        return View(idPresupuesto);
+        return View((id));
     }
 
     [HttpPost]

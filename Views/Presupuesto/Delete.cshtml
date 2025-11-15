@@ -9,8 +9,8 @@
 <section class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
     <article class="border rounded p-5 shadow-sm bg-light text-center" style="width: 400px;">
         <form asp-controller="Presupuesto" asp-action="DeleteConfirmed" method="post">
-            <input type="hidden" asp-for="IdPresupuesto">
-            
+            <input type="hidden" asp-for="IdPresupuesto"/>
+
             <p class="fs-5 mb-4">
                 ¿Estás seguro de que deseas eliminar el presupuesto a nombre de 
                 <strong>@Model.NombreDestinatario</strong>?
