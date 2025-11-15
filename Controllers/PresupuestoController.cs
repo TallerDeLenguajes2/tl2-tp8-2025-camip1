@@ -78,6 +78,6 @@ public class PresupuestoController : Controller
     public IActionResult CreateDetalle(int idPresupuesto, int idProducto, int cantidad)
     {
         _repoPresupuesto.CreateDetalle(idPresupuesto, idProducto, cantidad);
-        return RedirectToAction("Index");
+        return RedirectToAction("Details", new {id = idPresupuesto});
     }
 }
