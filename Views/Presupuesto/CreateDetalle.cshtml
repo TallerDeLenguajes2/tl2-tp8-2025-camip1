@@ -1,0 +1,27 @@
+@model PresupuestoDetalle
+
+@{
+    ViewData["Title"] = "Agregar Detalle";
+}
+
+<h1 class="text-center my-4 text-danger">@ViewData["Title"]</h1>
+
+<section class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <article class="border rounded p-5 shadow-sm bg-light text-center" style="width: 400px;">
+        <p>¿Desea agregar un detalle?</p>
+        <form asp-controller="Presupuesto" asp-action="CreateDetalle" method="post">
+            <section class="form-group p-2">
+                <label asp-for="Producto" class="form-label">Id Producto</label>
+                <input type="number" asp-for="Producto" class="form-control-sm">
+            </section>
+            <section class="form-group d-flex justify-content-between p-2">
+                <label asp-for="Cantidad" class="form-label">Cantidad</label>
+                <input type="number" asp-for="Cantidad" class="form-control-sm">
+            </section>
+            <section class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger px-4">Guardar</button>
+                <a asp-controller="Presupuesto" asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </section>
+        </form>
+    </article>
+</section>

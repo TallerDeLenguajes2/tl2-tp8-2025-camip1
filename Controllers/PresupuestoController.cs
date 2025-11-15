@@ -36,22 +36,22 @@ public class PresupuestoController : Controller
     public IActionResult Create(Presupuesto nuevoPresupuesto)
     {
         _repoPresupuesto.Create(nuevoPresupuesto);
-        return RedirectToAction("Index");  //redirige a la vista index de producto      
+        return RedirectToAction("Index");  
     }
 
-    // [HttpGet]
-    // public IActionResult Edit(int id)
-    // {
-    //     var presupuesto = _repoPresupuesto.GetById(id);
-    //     return View(presupuesto);
-    // }
+    [HttpGet]
+    public IActionResult Edit(int id)
+    {
+        var presupuesto = _repoPresupuesto.GetById(id);
+        return View(presupuesto);
+    }
 
-    // [HttpPost]
-    // public IActionResult Edit(Presupuesto presupuesto)
-    // {
-    //     _repoPresupuesto.CreateDetalle(presupuesto.IdPresupuesto, presupuesto.);
-    //     return RedirectToAction("Index");
-    // }
+    [HttpPost]
+    public IActionResult Edit(Presupuesto presupuesto)
+    {
+        _repoPresupuesto.Update(presupuesto.IdPresupuesto, presupuesto);
+        return RedirectToAction("Index");
+    }
 
     [HttpGet]
     public IActionResult Delete(int id)
@@ -65,6 +65,19 @@ public class PresupuestoController : Controller
     {
         if (_repoPresupuesto.GetById(id) == null) return NotFound();
         _repoPresupuesto.Delete(id);
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult CreateDetalle(int idPresupuesto)
+    {
+        return View(idPresupuesto);
+    }
+
+    [HttpPost]
+    public IActionResult CreateDetalle(int idPresupuesto, int idProducto, int cantidad)
+    {
+        _repoPresupuesto.CreateDetalle(idPresupuesto, idProducto, cantidad);
         return RedirectToAction("Index");
     }
 }
