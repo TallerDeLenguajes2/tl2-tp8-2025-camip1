@@ -141,7 +141,7 @@ public class PresupuestoRepository
     }
 
 
-    public void CreateDetalle(int idPresupuesto, int idProducto, int cantidad)
+    public void AgregarProducto(int idPresupuesto, int idProducto, int cantidad)
     {
         using var conexion = new SqliteConnection(cadenaConexion);
         conexion.Open();

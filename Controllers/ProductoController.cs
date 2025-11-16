@@ -28,7 +28,7 @@ public class ProductoController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        return View(); //me lleva a la vista crear producto con el formulario
+        return View(new ProductoViewModel()); 
     }
 
     [HttpPost]
@@ -56,7 +56,15 @@ public class ProductoController : Controller
     public IActionResult Edit(int id)
     {
         var producto = _productoRepository.GetById(id);
-        return View(producto);
+
+        var productoVM = new ProductoViewModel
+        {
+            IdProducto = producto.IdProducto,
+            Descripcion = producto.Descripcion,
+            Precio = producto.Precio
+        };
+
+        return View(productoVM);
     }
 
     [HttpPost]
@@ -88,11 +96,11 @@ public class ProductoController : Controller
     }
     
     [HttpPost]
-    public IActionResult DeleteConfirmed(int id)
+    public IActionResult DeleteConfirmed(int idProducto)
     {
-        if (_productoRepository.GetById(id) == null) return NotFound();
-        _productoRepository.Delete(id);
-        return RedirectToAction("Index");
+        if (_productoRepository.GetById(idProducto) == null) return NotFound();
+        _productoRepository.Delete(idProducto);
+        return RedirectToAction(nameof(Index));
     }
 
 }

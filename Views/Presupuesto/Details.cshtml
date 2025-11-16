@@ -21,7 +21,7 @@
             <p class="card-text">-----Total con IVA: $@Model.MontoPresupuestoConIva();
         </div>
         <div class = "d-flex justify-content-center">
-            <a asp-controller="Presupuesto" asp-action="CreateDetalle" asp-route-id="@Model.IdPresupuesto" class="btn btn-info m-2">Agregar Producto</a>
+            <a asp-controller="Presupuesto" asp-action="AgregarProducto" asp-route-id="@Model.IdPresupuesto" class="btn btn-info m-2">Agregar Producto</a>
             <a asp-controller="Presupuesto" asp-action="Edit" asp-route-id="@Model.IdPresupuesto" class="btn btn-warning m-2">Modificar</a>
             <a asp-controller="Presupuesto" asp-action="Delete" asp-route-id="@Model.IdPresupuesto" class="btn btn-danger m-2">Eliminar</a>            
         </div>
