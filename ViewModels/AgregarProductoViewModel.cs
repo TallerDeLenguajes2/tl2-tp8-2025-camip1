@@ -17,6 +17,5 @@ namespace tl2_tp8_2025_camip1.ViewModels
         [Range(1, int.MaxValue, ErrorMessage = "Cantidad ingresada invalida")]
         public int Cantidad { get; set; } 
         public SelectList ListaProductos { get; set; } // Propiedad adicional sin validacion , el controlador carga aquí los productos para el dropdown de la vista.
-
     }
 }

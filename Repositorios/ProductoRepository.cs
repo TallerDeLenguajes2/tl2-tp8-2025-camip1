@@ -29,7 +29,7 @@ public class ProductoRepository
                 {
                     IdProducto = Convert.ToInt32(reader["id_producto"]),
                     Descripcion = reader["descripcion"].ToString(),
-                    Precio = Convert.ToInt32(reader["precio"])
+                    Precio = Convert.ToDecimal(reader["precio"])
                 };
                 ListaProductos.Add(producto);
             }
@@ -57,7 +57,7 @@ public class ProductoRepository
     }
 
     //Modificar un Producto existente. (recibe un Id y un objeto Producto)
-    public void Update(int id, Producto prodModificado)
+    public void Update(Producto prodModificado)
     {
         string queryString = @"UPDATE Producto SET descripcion = @descripcion, precio = @precio WHERE id_producto = @id_producto";
 
@@ -67,7 +67,7 @@ public class ProductoRepository
         using var comando = new SqliteCommand(queryString, conexion);
         comando.Parameters.Add(new SqliteParameter("@descripcion", prodModificado.Descripcion));
         comando.Parameters.Add(new SqliteParameter("@precio", prodModificado.Precio));
-        comando.Parameters.Add(new SqliteParameter("@id_producto", id));
+        comando.Parameters.Add(new SqliteParameter("@id_producto", prodModificado.IdProducto));
 
         comando.ExecuteNonQuery();
 
@@ -95,7 +95,7 @@ public class ProductoRepository
             {
                 IdProducto = Convert.ToInt32(lector["id_producto"]),
                 Descripcion = lector["descripcion"].ToString(),
-                Precio = Convert.ToInt32(lector["precio"])
+                Precio = Convert.ToDecimal(lector["precio"])
             };
         }
         conexion.Close();

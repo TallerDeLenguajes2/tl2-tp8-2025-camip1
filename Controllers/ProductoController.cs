@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using tl2_tp8_2025_camip1.Models;
 using tl2_tp8_2025_camip1.Repository;
+using tl2_tp8_2025_camip1.ViewModels;
 
 namespace tl2_tp8_2025_camip1.Controllers;
 
@@ -31,10 +32,24 @@ public class ProductoController : Controller
     }
 
     [HttpPost]
-    public IActionResult Create(Producto nuevoProducto)
+    public IActionResult Create(ProductoViewModel productoVM)
     {
+        //CHEQUEO DE SEGURIDAD DEL SERVIDOR
+        if(!ModelState.IsValid)
+        {
+            //Si falla: devuelvo el ViewModel con los datos y errores a la Vista
+            return View(productoVM);
+        }
+        //Si es válido: Mapeo manual de VM a Modelo de Dominio
+        var nuevoProducto = new Producto
+        {
+            Descripcion = productoVM.Descripcion,
+            Precio = productoVM.Precio            
+        };
+
+        //LLAMADA AL REPOSITORIO
         _productoRepository.Create(nuevoProducto);
-        return RedirectToAction("Index");  //redirige a la vista index de producto      
+        return RedirectToAction(nameof(Index));  //redirige a la vista index de producto      
     }
 
     [HttpGet]
@@ -45,10 +60,24 @@ public class ProductoController : Controller
     }
 
     [HttpPost]
-    public IActionResult Edit(Producto producto)
+    public IActionResult Edit(int id, ProductoViewModel productoVM)
     {
-        _productoRepository.Update(producto.IdProducto, producto);
-        return RedirectToAction("Index");
+        if(id != productoVM.IdProducto) return NotFound();
+
+        if (!ModelState.IsValid)
+        {
+            return View(productoVM);
+        }
+
+        var productoAEditar = new Producto
+        {
+            IdProducto = productoVM.IdProducto, //Necesario para el UPDATE
+            Descripcion = productoVM.Descripcion,
+            Precio = productoVM.Precio
+        };
+
+        _productoRepository.Update(productoAEditar);
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -66,12 +95,4 @@ public class ProductoController : Controller
         return RedirectToAction("Index");
     }
 
-    // [HttpGet]
-    // public IActionResult Details(int id)
-    // {
-    //     var producto = _productoRepository.GetById(id);
-    //     if (producto == null) return NotFound();
-
-    //     return View(producto);
-    // }
 }

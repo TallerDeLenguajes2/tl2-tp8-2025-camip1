@@ -109,7 +109,7 @@ public class PresupuestoRepository
                     {
                         IdProducto = Convert.ToInt32(idProductoString),
                         Descripcion = lector["descripcion"].ToString(),
-                        Precio = Convert.ToInt32(lector["precio"])
+                        Precio = Convert.ToDecimal(lector["precio"])
                     },
                     Cantidad = Convert.ToInt32(lector["cantidad"])
                 };

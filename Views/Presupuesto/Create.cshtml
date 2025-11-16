@@ -1,4 +1,4 @@
-@model Presupuesto
+@model tl2_tp8_2025_camip1.ViewModels.PresupuestoViewModel
 
 @{
     ViewData["Title"] = "Crear Presupuesto";
@@ -9,12 +9,14 @@
     <article class="border rounded p-5">
         <form asp-controller="Presupuesto" asp-action="Create" method="post">
             <section class="form-group p-2">
-                <label asp-for="NombreDestinatario" class="form-label">Destinatario</label>
+                <label asp-for="NombreDestinatario" class="form-label"></label>
                 <input type="text" asp-for="NombreDestinatario" class="form-control-sm">
+                <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
             </section>
             <section class="form-group d-flex justify-content-between p-2">
-                <label asp-for="FechaCreacion" class="form-label">Fecha</label>
+                <label asp-for="FechaCreacion" class="form-label"></label>
                 <input type="date" asp-for="FechaCreacion" class="form-control-sm">
+                <span asp-validation-for="FechaCreacion" class="text-danger"></span>
             </section>
             <section class="form-group d-flex p-2 justify-content-center">
                 <input type="submit" value="Crear" class="btn btn-primary m-2">
@@ -23,3 +25,7 @@
         </form>
     </article>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
