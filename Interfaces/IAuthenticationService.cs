@@ -2,10 +2,10 @@ namespace tl2_tp8_2025_camip1.Interfaces;
 
 public interface IAuthenticationService
 {
-    bool Login(string user, string pass);
+    bool Login(string username, string password);
     void Logout();
-    bool isAuthenticated();
+    bool IsAuthenticated();
 
     // verifica si el usuario tiene el rol requerido
-    bool HasAcesssLevel(string rol); 
+    bool HasAccessLevel(string rol); 
 }
