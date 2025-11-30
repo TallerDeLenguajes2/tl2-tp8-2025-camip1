@@ -2,15 +2,16 @@ using Microsoft.AspNetCore.Mvc;
 using tl2_tp8_2025_camip1.Models;
 using tl2_tp8_2025_camip1.Repository;
 using tl2_tp8_2025_camip1.ViewModels;
+using tl2_tp8_2025_camip1.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace tl2_tp8_2025_camip1.Controllers;
 
 public class PresupuestoController : Controller
 {
-    private readonly PresupuestoRepository _repoPresupuesto;
+    private readonly IPresupuestoRepository _repoPresupuesto;
     private readonly ProductoRepository _repoProducto; 
-    public PresupuestoController()
+    public PresupuestoController(IPresupuestoRepository _repoPresupuesto)
     {
         _repoPresupuesto = new PresupuestoRepository();
         _repoProducto = new ProductoRepository();
