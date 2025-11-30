@@ -1,9 +1,10 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic;
+using tl2_tp8_2025_camip1.Interfaces;
 using tl2_tp8_2025_camip1.Models;
 
 namespace tl2_tp8_2025_camip1.Repository;
-public class PresupuestoRepository
+public class PresupuestoRepository: IPresupuestoRepository
 {
     private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
 

@@ -1,9 +1,10 @@
 using Microsoft.Data.Sqlite;
+using tl2_tp8_2025_camip1.Interfaces;
 using tl2_tp8_2025_camip1.Models;
 
 
 namespace tl2_tp8_2025_camip1.Repository;
-public class ProductoRepository
+public class ProductoRepository: IProductoRepository
 {
     private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
 
@@ -118,16 +119,4 @@ public class ProductoRepository
         conexion.Close();
         //return filasAfectadas > 0;
     }
-
-    //determina si existe un producto
-
-    public bool ExisteProducto(Producto prod)
-    {
-        if (prod == null || prod.IdProducto <= 0)
-            return false;
-
-        var productoEncontrado = GetById(prod.IdProducto);
-        return productoEncontrado != null;
-    }
-
 }
