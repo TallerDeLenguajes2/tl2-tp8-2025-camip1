@@ -10,11 +10,11 @@ namespace tl2_tp8_2025_camip1.Controllers;
 public class PresupuestoController : Controller
 {
     private readonly IPresupuestoRepository _repoPresupuesto;
-    private readonly ProductoRepository _repoProducto; 
-    public PresupuestoController(IPresupuestoRepository _repoPresupuesto)
+    private readonly IProductoRepository _repoProducto; 
+    public PresupuestoController(IPresupuestoRepository repoPresupuesto, IProductoRepository repoProducto)
     {
-        _repoPresupuesto = new PresupuestoRepository();
-        _repoProducto = new ProductoRepository();
+        _repoPresupuesto = repoPresupuesto;
+        _repoProducto = repoProducto;
     }
 
     [HttpGet]

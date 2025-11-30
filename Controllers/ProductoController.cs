@@ -3,17 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using tl2_tp8_2025_camip1.Models;
 using tl2_tp8_2025_camip1.Repository;
 using tl2_tp8_2025_camip1.ViewModels;
+using tl2_tp8_2025_camip1.Interfaces;
 
 namespace tl2_tp8_2025_camip1.Controllers;
 
 public class ProductoController : Controller
 {
     //private readonly ILogger<HomeController> _logger;
-    private ProductoRepository _productoRepository;
-    public ProductoController()
+    private IProductoRepository _productoRepository;
+    public ProductoController(IProductoRepository repoProducto)
     {
         //  _logger = logger;
-        _productoRepository = new ProductoRepository();
+        _productoRepository = repoProducto;
     }
     //A partir de aquí van todos los Action Methods (Get, Post,etc.)
 
