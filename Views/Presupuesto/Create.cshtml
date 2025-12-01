@@ -13,6 +13,12 @@
                 <input type="text" asp-for="NombreDestinatario" class="form-control-sm">
                 <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
             </section>
+
+            <div class="form-group">
+                <label asp-for="FechaCreacion" class="control-label"></label>
+                <input asp-for="FechaCreacion" class="form-control" /> 
+                <span asp-validation-for="FechaCreacion" class="text-danger"></span> 
+            </div>
             
             <section class="form-group d-flex p-2 justify-content-center">
                 <input type="submit" value="Crear" class="btn btn-primary m-2">

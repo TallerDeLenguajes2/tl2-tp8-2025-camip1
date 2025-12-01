@@ -9,32 +9,69 @@ namespace tl2_tp8_2025_camip1.Controllers;
 
 public class ProductoController : Controller
 {
-    //private readonly ILogger<HomeController> _logger;
     private IProductoRepository _productoRepository;
-    public ProductoController(IProductoRepository repoProducto)
+    private IAuthenticationService _authService;
+    public ProductoController(IProductoRepository repoProducto, IAuthenticationService authService)
     {
-        //  _logger = logger;
         _productoRepository = repoProducto;
+        _authService = authService;
     }
     //A partir de aquí van todos los Action Methods (Get, Post,etc.)
+
+    private IActionResult CheckAdminPermissions()
+    {
+        // 1. No logueado? -> vuelve al login
+        if (!_authService.IsAuthenticated())
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
+        // 2. No es Administrador? -> Da Error
+        if (!_authService.HasAccessLevel("Administrador"))
+        {
+        // Llamamos a AccesoDenegado (llama a la vista correspondiente de Productos)
+            return RedirectToAction(nameof(AccesoDenegado));
+        }
+        return null; // Permiso concedido
+    }
 
     [HttpGet]
     public IActionResult Index()
     {
+        var securityCheck = CheckAdminPermissions();
+        if(securityCheck != null) return securityCheck;
+
         List<Producto> productos = _productoRepository.GetAll();
         return View(productos);
     }
 
+    // public IActionResult Details(int id)
+    // {
+    //     // Aplicamos el chequeo de seguridad
+    //     var securityCheck = CheckAdminPermissions();
+    //     if (securityCheck != null) return securityCheck;
+
+    //     Producto producto = _repo.GetById(id);
+    //     if (producto == null) return NotFound();
+    //     return View(producto);
+    // }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new ProductoViewModel()); 
+        var securityCheck = CheckAdminPermissions();
+        if(securityCheck != null) return securityCheck;
+
+        return View(); 
     }
 
     [HttpPost]
     public IActionResult Create(ProductoViewModel productoVM)
     {
+        // Aplicamos el chequeo de seguridad
+        // var securityCheck = CheckAdminPermissions();
+        // if(securityCheck != null) return securityCheck;
+
         //CHEQUEO DE SEGURIDAD DEL SERVIDOR
         if(!ModelState.IsValid)
         {
@@ -56,23 +93,29 @@ public class ProductoController : Controller
     [HttpGet]
     public IActionResult Edit(int id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if(securityCheck != null) return securityCheck;
+
         var producto = _productoRepository.GetById(id);
 
-        var productoVM = new ProductoViewModel
-        {
-            IdProducto = producto.IdProducto,
-            Descripcion = producto.Descripcion,
-            Precio = producto.Precio
-        };
+        ProductoViewModel productovm = new ProductoViewModel(producto);
 
-        return View(productoVM);
+        if (producto == null)
+        {
+            return NotFound();
+        }
+        return View(productovm);
     }
 
     [HttpPost]
     public IActionResult Edit(int id, ProductoViewModel productoVM)
     {
+        // var securityCheck = CheckAdminPermissions();
+        // if(securityCheck != null) return securityCheck;
+
         if(id != productoVM.IdProducto) return NotFound();
 
+        //CHEQUEO DE SEGURIDAD
         if (!ModelState.IsValid)
         {
             return View(productoVM);
@@ -92,16 +135,35 @@ public class ProductoController : Controller
     [HttpGet]
     public IActionResult Delete(int id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if(securityCheck != null) return securityCheck;
+
         var producto = _productoRepository.GetById(id);
+        if (producto == null) return NotFound();
         return View(producto);
     }
     
     [HttpPost]
     public IActionResult DeleteConfirmed(int idProducto)
     {
-        if (_productoRepository.GetById(idProducto) == null) return NotFound();
+        // var securityCheck = CheckAdminPermissions();
+        // if(securityCheck != null) return securityCheck;
+
+//        if (_productoRepository.GetById(idProducto) == null) return NotFound();
         _productoRepository.Delete(idProducto);
         return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult AccesoDenegado()
+    {
+        return View(); // El usuario está logueado, pero no tiene el rol suficiente.
+    }
+
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
 }

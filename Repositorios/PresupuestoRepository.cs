@@ -1,12 +1,25 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
-using Microsoft.VisualBasic;
 using tl2_tp8_2025_camip1.Interfaces;
 using tl2_tp8_2025_camip1.Models;
 
 namespace tl2_tp8_2025_camip1.Repository;
+
 public class PresupuestoRepository: IPresupuestoRepository
 {
-    private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
+    private readonly string cadenaConexion = "Data Source=./DB/Tienda.db";
+
+
+        // Mantenemos Acoplamiento Fuerte: El Repositorio de Presupuestos
+        // instancia al Repositorio de Productos para obtener los detalles.
+    //    private readonly ProductoRepository _productoRepo = new ProductoRepository();
+
+        // ------------------------------------------------------------------
+        // OPERACIONES CRUD BÁSICAS
+        // ------------------------------------------------------------------
+
+// OBTENER TODOS
 
     public List<Presupuesto> GetAll()
     {
@@ -18,39 +31,33 @@ public class PresupuestoRepository: IPresupuestoRepository
         connection.Open();
 
         using var command = new SqliteCommand(query, connection);
-
-        using (SqliteDataReader reader = command.ExecuteReader())
+        using var reader = command.ExecuteReader();
+        
+        while (reader.Read())
         {
-            while (reader.Read())
+            var presupuesto = new Presupuesto
             {
-                var presupuesto = new Presupuesto
-                {
-                    IdPresupuesto = Convert.ToInt32(reader["id_presupuesto"]),
-                    NombreDestinatario = reader["nombre_destinatario"].ToString(),
-                    FechaCreacion = Convert.ToDateTime(reader["fecha_creacion"]),
-                    ListaDetalles = new List<PresupuestoDetalle>()
-                };
+                IdPresupuesto = Convert.ToInt32(reader["id_presupuesto"]),
+                NombreDestinatario = reader["nombre_destinatario"].ToString(),
+                FechaCreacion = Convert.ToDateTime(reader["fecha_creacion"]),
+                // Nota: Los detalles (Detalle) NO se cargan en GetAll() por eficiencia.
+            };
 
-                ListaPresupuestos.Add(presupuesto);
-            }
+            ListaPresupuestos.Add(presupuesto);
         }
-        // foreach (var presupuesto in ListaPresupuestos)
-        // {
-        //     presupuesto.ListaDetalles = GetAllDetalles(presupuesto.IdPresupuesto, connection);
-        // }
 
-        connection.Close();
+        //connection.Close();
         return ListaPresupuestos;
     }
 
     public void Create(Presupuesto presupuesto)
     {
-        using var conexion = new SqliteConnection(cadenaConexion);
-        conexion.Open();
-
         string sql = @"
                         INSERT INTO Presupuesto (nombre_destinatario, fecha_creacion) 
                         VALUES (@nombre_destinatario, @fecha_creacion)";
+
+        using var conexion = new SqliteConnection(cadenaConexion);
+        conexion.Open();
 
         using var comando = new SqliteCommand(sql, conexion);
 
@@ -58,16 +65,12 @@ public class PresupuestoRepository: IPresupuestoRepository
         comando.Parameters.Add(new SqliteParameter("@fecha_creacion", presupuesto.FechaCreacion));
 
         comando.ExecuteNonQuery();
-
-        conexion.Close();
+        //conexion.Close();
     }
 
+ // OBTENER POR ID
     public Presupuesto GetById(int id)
     {
-        
-        using var conexion = new SqliteConnection(cadenaConexion);
-        conexion.Open();
-
         string query = @"SELECT p.id_presupuesto, 
                                 p.nombre_destinatario, 
                                 p.fecha_creacion, 
@@ -80,8 +83,11 @@ public class PresupuestoRepository: IPresupuestoRepository
                         LEFT JOIN Producto AS prod ON d.id_producto = prod.id_producto 
                         WHERE p.id_presupuesto = @id_presupuesto";
 
+        using var conexion = new SqliteConnection(cadenaConexion);
+        conexion.Open();
+
         using var comando = new SqliteCommand(query, conexion);
-        comando.Parameters.Add(new SqliteParameter("@id_presupuesto", id));
+        comando.Parameters.AddWithValue("@id_presupuesto", id);
 
         using var lector = comando.ExecuteReader();
 
@@ -128,17 +134,18 @@ public class PresupuestoRepository: IPresupuestoRepository
 
         string sql = @"
                         UPDATE Presupuesto 
-                        SET nombre_destinatario = @nombre_destinatario
+                        SET nombre_destinatario = @nombre_destinatario, fecha_creacion = @fecha_creacion
                         WHERE id_presupuesto = @id_presupuesto";
 
         using var comando = new SqliteCommand(sql, conexion);
 
         comando.Parameters.Add(new SqliteParameter("@nombre_destinatario", nuevoPresupuesto.NombreDestinatario));
+        comando.Parameters.Add(new SqliteParameter("@fecha_creacion", nuevoPresupuesto.FechaCreacion));
         comando.Parameters.Add(new SqliteParameter("@id_presupuesto", id));
 
         comando.ExecuteNonQuery();
 
-        conexion.Close();
+        //conexion.Close();
     }
 
 
@@ -158,7 +165,7 @@ public class PresupuestoRepository: IPresupuestoRepository
         comando.Parameters.Add(new SqliteParameter("@cantidad", cantidad));
 
         comando.ExecuteNonQuery();
-        conexion.Close();
+        //conexion.Close();
     }
 
     public void Delete(int id)
@@ -168,11 +175,16 @@ public class PresupuestoRepository: IPresupuestoRepository
         using var conexion = new SqliteConnection(cadenaConexion);
         conexion.Open();
 
+        string sqlDetalle = "DELETE FROM PresupuestoDetalle WHERE id_presupuesto = @id_presupuesto";
+        using var comandoDetalle = new SqliteCommand(sqlDetalle, conexion);
+        comandoDetalle.Parameters.AddWithValue("@id_presupuesto", id);
+        comandoDetalle.ExecuteNonQuery();
+
         using var comando = new SqliteCommand(query, conexion);
         comando.Parameters.Add(new SqliteParameter("@id_presupuesto", id));
 
         comando.ExecuteNonQuery();
-        conexion.Close();
+        //conexion.Close();
     }
 }
 

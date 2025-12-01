@@ -18,7 +18,7 @@
 
             <section class="form-group mb-4">
                 <label asp-for="Precio" class="form-label fw-semibold"></label>
-                <input type="number" asp-for="Precio" class="form-control">
+                <input asp-for="Precio" class="form-control">
                 <span asp-validation-for="Precio" class="text-danger"></span>
             </section>
 
@@ -32,4 +32,15 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+   <script>
+        // Le dice a jQuery Validation que ignore la regla 'number'
+        // que es la que produce el error de la coma.
+        jQuery.validator.setDefaults({
+            rules: {
+                number: {
+                    required: false // Deshabilita el chequeo de tipo 'number' en el Front-End
+                }
+            }
+        });
+    </script>      
 }

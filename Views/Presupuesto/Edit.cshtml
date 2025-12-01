@@ -9,12 +9,21 @@
 <section class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
     <article class="border rounded p-5 shadow-sm bg-light" style="width: 400px;">
         <form asp-controller="Presupuesto" asp-action="Edit" method="post">
+            
             <input type="hidden" asp-for="IdPresupuesto"/>
+
             <section class="form-group mb-3">
                 <label asp-for="NombreDestinatario" class="form-label fw-semibold"></label>
                 <input asp-for="NombreDestinatario" class="form-control">
                 <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
             </section>
+
+            <div class="form-group">
+                <label asp-for="FechaCreacion" class="control-label"></label>
+                <input asp-for="FechaCreacion" class="form-control" /> 
+                <span asp-validation-for="FechaCreacion" class="text-danger"></span> 
+            </div>
+            
             <section class="d-flex justify-content-between">
                 <input type="submit" value="Guardar cambios" class="btn btn-primary">
                 <a type="button" asp-controller="Presupuesto" asp-action="Index" class="btn btn-secondary">Cancelar</a>

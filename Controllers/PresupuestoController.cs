@@ -1,46 +1,115 @@
 using Microsoft.AspNetCore.Mvc;
 using tl2_tp8_2025_camip1.Models;
-using tl2_tp8_2025_camip1.Repository;
 using tl2_tp8_2025_camip1.ViewModels;
 using tl2_tp8_2025_camip1.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Diagnostics;
 
 namespace tl2_tp8_2025_camip1.Controllers;
 
 public class PresupuestoController : Controller
 {
     private readonly IPresupuestoRepository _repoPresupuesto;
+    
+     // Se necesita el repositorio de Productos para llenar los Dropdowns
     private readonly IProductoRepository _repoProducto; 
-    public PresupuestoController(IPresupuestoRepository repoPresupuesto, IProductoRepository repoProducto)
+    private IAuthenticationService _authService;
+    public PresupuestoController(IPresupuestoRepository repoPresupuesto, IProductoRepository repoProducto, IAuthenticationService authService)
     {
         _repoPresupuesto = repoPresupuesto;
         _repoProducto = repoProducto;
+        _authService = authService;
+    }
+
+    private IActionResult CheckAdminPermissions()
+    {
+        // 1. No logueado? -> vuelve al login
+        if (!_authService.IsAuthenticated())
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
+        // 2. No es Administrador? -> Da Error
+        if (!_authService.HasAccessLevel("Administrador"))
+        {
+        // Llamamos a AccesoDenegado (llama a la vista correspondiente de Productos)
+            return RedirectToAction(nameof(AccesoDenegado));
+        }
+        return null; // Permiso concedido
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        List<Presupuesto> presupuestos = _repoPresupuesto.GetAll();
-        return View(presupuestos);
+        // Comprobación de si está logueado manual
+        if (!_authService.IsAuthenticated())
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
+        // Verifica Nivel de acceso que necesite validar
+        if (_authService.HasAccessLevel("Administrador") ||
+        _authService.HasAccessLevel("Cliente"))
+        {
+            //Si es admin o cliente entra
+            List<Presupuesto> presupuestos = _repoPresupuesto.GetAll();
+            return View(presupuestos);        
+        }
+        else
+        {
+            return RedirectToAction("Index", "Login");
+        }
     }
 
     [HttpGet]
     public IActionResult Details(int id)
     {
-        var presupuesto = _repoPresupuesto.GetById(id);
-        return View(presupuesto);
+        // Comprobación de si está logueado
+        if (!_authService.IsAuthenticated())
+        {
+            return RedirectToAction("Index", "Login");
+        }
+        // Verifica Nivel de acceso que necesite validar
+        if (_authService.HasAccessLevel("Administrador") ||
+        _authService.HasAccessLevel("Cliente"))
+        {
+            var presupuesto = _repoPresupuesto.GetById(id);
+            if (presupuesto == null)
+            {
+                return NotFound();
+            }
+            return View(presupuesto);        
+        }
+        else
+        {
+            return RedirectToAction("Index", "Login");
+        }
     }
     
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new PresupuestoViewModel()); //me lleva a la vista crear presupuesto con el formulario
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+        // Se retorna un VM vacío para el formulario
+        return View(new PresupuestoViewModel());
     }
+
 
     [HttpPost]
     public IActionResult Create(PresupuestoViewModel presupuestoVM)
     {
-        //Control de seguridad del servidor
+        // var securityCheck = CheckAdminPermissions();
+        // if (securityCheck != null) return securityCheck;
+
+        // VALIDACIÓN DE REGLA DE NEGOCIO ESPECÍFICA (Fecha no Futura)
+        if (presupuestoVM.FechaCreacion > DateTime.Today)
+        {
+            // Se añade un error al ModelState
+            ModelState.AddModelError("FechaCreacion", "La fecha de creación no puede ser una fecha futura.");
+        }
+
+        // //Control de seguridad del servidor
         if (!ModelState.IsValid)
         {
             return View(presupuestoVM);
@@ -50,7 +119,7 @@ public class PresupuestoController : Controller
         var nuevoPresupuesto = new Presupuesto
         {
             NombreDestinatario = presupuestoVM.NombreDestinatario,
-            FechaCreacion = DateTime.Now
+            FechaCreacion = presupuestoVM.FechaCreacion
         };
 
         //Llamada al repositorio
@@ -61,22 +130,30 @@ public class PresupuestoController : Controller
     [HttpGet]
     public IActionResult Edit(int id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+
         var presupuesto = _repoPresupuesto.GetById(id);
+        if (presupuesto == null) return NotFound();
 
         //Mapeo manual a VM desde Modelo de Dominio
-        var presupuestoVM = new PresupuestoViewModel
-        {
-            IdPresupuesto = presupuesto.IdPresupuesto,
-            NombreDestinatario = presupuesto.NombreDestinatario,
-            FechaCreacion = presupuesto.FechaCreacion
-        };
+        var presupuestoVM = new PresupuestoViewModel(presupuesto);
+
         return View(presupuestoVM);
     }
 
     [HttpPost]
     public IActionResult Edit(int id, PresupuestoViewModel presupuestoVM)
     {
+        // var securityCheck = CheckAdminPermissions();
+        // if (securityCheck != null) return securityCheck;
+
         if(id != presupuestoVM.IdPresupuesto) return NotFound();
+
+        if (presupuestoVM.FechaCreacion > DateTime.Today)
+        {
+            ModelState.AddModelError("FechaCreacion", "La fecha de creación no puede ser una fecha futura.");
+        }
 
         //Chequeo de seguridad del servidor
         if (!ModelState.IsValid)
@@ -99,14 +176,25 @@ public class PresupuestoController : Controller
     [HttpGet]
     public IActionResult Delete(int id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+        
         var presupuesto = _repoPresupuesto.GetById(id);
+        if (presupuesto == null)
+        {
+            return NotFound();
+        }
         return View(presupuesto);
     }
     
     [HttpPost]
     public IActionResult DeleteConfirmed(int idPresupuesto)
     {
-        if (_repoPresupuesto.GetById(idPresupuesto) == null) return NotFound();
+        // var securityCheck = CheckAdminPermissions();
+        // if (securityCheck != null) return securityCheck;
+        
+//        if (_repoPresupuesto.GetById(idPresupuesto) == null) return NotFound();
+        
         _repoPresupuesto.Delete(idPresupuesto);
         return RedirectToAction("Index");
     }
@@ -114,6 +202,8 @@ public class PresupuestoController : Controller
     [HttpGet]
     public IActionResult AgregarProducto(int id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
         //Obtengo productos para el SelectList
         List<Producto> productos = _repoProducto.GetAll();
         
@@ -131,9 +221,23 @@ public class PresupuestoController : Controller
     [HttpPost]
     public IActionResult AgregarProducto(AgregarProductoViewModel model)
     {
-        // 1. Chequeo de Seguridad para la Cantidad
+        // var securityCheck = CheckAdminPermissions();
+        // if (securityCheck != null) return securityCheck;
+        // // 1. Chequeo de Seguridad para la Cantidad
         if (!ModelState.IsValid)
         {
+             // ❌ LÓGICA CRÍTICA DE RECARGA: Si la validación falla (ej. Cantidad < 1),
+            // Muestra todos los errores en la Consola/Debug Output de Visual Studio
+            // foreach (var modelStateKey in ModelState.Keys)
+            // {
+            //     var modelStateVal = ModelState[modelStateKey];
+            //     foreach (var error in modelStateVal.Errors)
+            //     {
+            //         // Imprime el nombre del campo y el error de validación exacto.
+            //         Console.WriteLine($"Error en el campo '{modelStateKey}': {error.ErrorMessage}");
+            //     }
+            // }
+     
         // LÓGICA CRÍTICA DE RECARGA: Si falla la validación,
         // debemos recargar el SelectList porque se pierde en el POST.
             var productos = _repoProducto.GetAll();
@@ -149,4 +253,20 @@ public class PresupuestoController : Controller
         // 3. Redirigimos al detalle del presupuesto
         return RedirectToAction(nameof(Details), new { id = model.IdPresupuesto });
     }
+
+
+//Nueva Acción: Simplemente devuelve una vista estática con el mensaje.
+    [HttpGet]
+    public IActionResult AccesoDenegado()
+    {
+        // El usuario está logueado, pero no tiene el rol suficiente.
+        return View();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+    
 }

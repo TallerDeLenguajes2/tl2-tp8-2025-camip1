@@ -1,4 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var isAuthenticated = false;
+    var username = string.Empty;
+
+    if (HttpContextAccessor.HttpContext.Session.GetString("IsAuthenticated") == "true")
+    {
+        isAuthenticated = true;
+        username = HttpContextAccessor.HttpContext.Session.GetString("UserNombre");
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -32,6 +44,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Presupuesto" asp-action="Index">Presupuestos</a>
                         </li>
+                        @if (isAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark me-3">Bienvenido/a, @username</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Logout", "Login")">Cerrar sesión</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Login")">Iniciar sesión</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

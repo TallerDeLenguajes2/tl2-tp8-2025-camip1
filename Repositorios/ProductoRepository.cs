@@ -6,14 +6,18 @@ using tl2_tp8_2025_camip1.Models;
 namespace tl2_tp8_2025_camip1.Repository;
 public class ProductoRepository: IProductoRepository
 {
-    private readonly string cadenaConexion = "Data Source = DB/Tienda.db";
+    private readonly string cadenaConexion = "Data Source=./DB/Tienda.db";
 
-    //metodos
+   // Constructor Síncrono (sin parámetros, necesario para la instanciación directa en el Controller)
+    public ProductoRepository()
+    {
+    }
+
 
     //Listar todos los Productos registrados. (devuelve un List de Producto)
     public List<Producto> GetAll()
     {
-        List<Producto> ListaProductos = [];
+        List<Producto> ListaProductos = new List<Producto>();
 
         string query = @"SELECT * FROM producto";
 
@@ -21,22 +25,21 @@ public class ProductoRepository: IProductoRepository
 
         connection.Open();
 
-        var command = new SqliteCommand(query, connection);
-        using (SqliteDataReader reader = command.ExecuteReader())
+        using var comando = new SqliteCommand(query, connection);
+        // ExecuteReader se usa para consultas que devuelven filas (SELECT)
+        using var reader = comando.ExecuteReader();
+    
+        while (reader.Read())
         {
-            while (reader.Read())
+            var producto = new Producto
             {
-                var producto = new Producto
-                {
-                    IdProducto = Convert.ToInt32(reader["id_producto"]),
-                    Descripcion = reader["descripcion"].ToString(),
-                    Precio = Convert.ToDecimal(reader["precio"])
-                };
-                ListaProductos.Add(producto);
-            }
+                IdProducto = Convert.ToInt32(reader["id_producto"]),
+                Descripcion = reader["descripcion"].ToString(),
+                Precio = Convert.ToDecimal(reader["precio"])
+            };
+            ListaProductos.Add(producto);
         }
-        connection.Close();
-
+        //connection.Close();
         return ListaProductos;
     }
 
@@ -54,7 +57,7 @@ public class ProductoRepository: IProductoRepository
 
         comando.ExecuteNonQuery();
 
-        conexion.Close();
+        //conexion.Close();
     }
 
     //Modificar un Producto existente. (recibe un Id y un objeto Producto)
@@ -72,10 +75,11 @@ public class ProductoRepository: IProductoRepository
 
         comando.ExecuteNonQuery();
 
-        conexion.Close();
+        //conexion.Close();
     }
 
-
+    
+    // Obtiene un producto por su ID
     public Producto GetById(int id)
     {
         string query = @"SELECT * FROM Producto WHERE id_producto = @id_producto";
@@ -99,7 +103,7 @@ public class ProductoRepository: IProductoRepository
                 Precio = Convert.ToDecimal(lector["precio"])
             };
         }
-        conexion.Close();
+        //conexion.Close();
         return producto; // devuelve null si no lo encontró
     }
 
@@ -116,7 +120,7 @@ public class ProductoRepository: IProductoRepository
         //int filasAfectadas = comando.ExecuteNonQuery();
         comando.ExecuteNonQuery();
 
-        conexion.Close();
+        //conexion.Close();
         //return filasAfectadas > 0;
     }
 }

@@ -1,8 +1,7 @@
-namespace tl2_tp8_2025_camip1.Models;
+namespace tl2_tp8_2025_camip1.ViewModels;
 
 public class ErrorViewModel
 {
-    public string? RequestId { get; set; }
-
+    public string RequestId { get; set; }
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }

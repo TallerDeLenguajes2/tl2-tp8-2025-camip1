@@ -1,9 +1,22 @@
 using System.ComponentModel.DataAnnotations;
+using tl2_tp8_2025_camip1.Models;
 
 namespace tl2_tp8_2025_camip1.ViewModels
 {
     public class ProductoViewModel
     {
+        public ProductoViewModel()
+        { 
+
+        }
+
+        public ProductoViewModel(Producto producto)
+        {
+            Descripcion = producto.Descripcion;
+            IdProducto = producto.IdProducto;
+            Precio = producto.Precio;
+        }
+
         //Este VM manejará la creación y edición de productos.
         
         //Para accion de edicion 

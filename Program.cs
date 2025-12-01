@@ -1,6 +1,7 @@
 using tl2_tp8_2025_camip1.Interfaces;
 using tl2_tp8_2025_camip1.Repository;
 using tl2_tp8_2025_camip1.Models;
+using tl2_tp8_2025_camip1.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -19,7 +20,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestoRepository, PresupuestoRepository>();
 builder.Services.AddScoped<IUserRepository, UsuarioRepository>();
-//builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 var app = builder.Build();
 
